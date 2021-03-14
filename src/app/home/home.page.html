@@ -1,7 +1,7 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-title>
-      Blank
+      Join Meet Chat
     </ion-title>
   </ion-toolbar>
 </ion-header>
@@ -13,6 +13,11 @@
     </ion-toolbar>
   </ion-header>
 
+  <ion-item>
+    <ion-label stacked>Set Nick Name</ion-label>
+    <ion-input type="text" [(ngModel)]="nickname" placheolder="Nickname"></ion-input>
+  </ion-item>
+  <ion-button ion-button full (click)="joinChat()" [disabled]="nickname === ''">Join Chat as {{ nickname }}</ion-button>
   <div id="container">
     <strong>Ready to create an app?</strong>
     <p>Start with Ionic <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>

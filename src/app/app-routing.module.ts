@@ -10,7 +10,11 @@ const routes: Routes = [
     path: '',
     redirectTo: 'home',
     pathMatch: 'full'
+  },  {
+    path: 'chatroom',
+    loadChildren: () => import('./chatroom/chatroom.module').then( m => m.ChatroomPageModule)
   },
+
 ];
 
 @NgModule({
