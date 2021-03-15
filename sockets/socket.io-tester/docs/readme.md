@@ -1,1 +1,0 @@
-# Socket.io tester app

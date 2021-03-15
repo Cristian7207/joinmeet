@@ -1,8 +1,9 @@
 import { Socket } from 'ngx-socket-io';
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
-import { ToastController } from '@ionic/angular';
+
 import { ActivatedRoute } from '@angular/router';
+import {SocketioService} from '../services/socketio.service';
 
 @Component({
   selector: 'app-chatroom',
@@ -10,73 +11,49 @@ import { ActivatedRoute } from '@angular/router';
   styleUrls: ['./chatroom.page.scss'],
 })
 export class ChatroomPage implements OnInit {
-
-  messages = [];
+  
   nickname = '';
   message = '';
-
-  constructor(private socket: Socket, public toastCtrl: ToastController,    private router: ActivatedRoute) {
-    this.nickname = this.router.snapshot.paramMap.get('nickname');
-    this.getMessages().subscribe(message=>
-          {
-            this.messages.push(message);
-          }
-      );
-
-      console.log(this.getUsers())
-
-      this.getUsers().subscribe(data => {
-        let user = data['user'];
-        if (data['event'] === 'left') {
-          this.showToast('User left: ' + user);
-        } else {
-          this.showToast('User joined: ' + user);
-        }
-      });
-  }
-
-  getUsers() {
-    let observable = new Observable(observer => {
-      this.socket.on('users-changed', (data) => {
-        observer.next(data);
-      });
-    });
-    return observable;
-  }
-
-  sendMessage()
-  {
-    this.socket.emit('add-message', { text: this.message});
-    this.message = '';
-  }
-
-  getMessages()
-  {
-    let observable = new Observable(observer=> 
-      {
-        this.socket.on('message', data=>
-        {
-          observer.next(data);
-        })
-      });
-      return observable;
+  messages = [];
+  onlineusers=[];
+  
+  constructor(private socket: SocketioService, private router: ActivatedRoute) {
   }
 
   ionViewWillLeave()
   {
-    this.socket.disconnect();
+    this.socket.getUsers().subscribe(data =>
+      {
+        this.onlineusers.push(data["onlineusers"]);
+      })
+
+   this.socket.disconnect();
   }
 
-  async showToast(msg) {
-    const toast = await this.toastCtrl.create({
-      message: msg,
-      duration: 2000
-    });
-    toast.present();
+  sendMessage() {
+    this.socket.sendMessage(this.message);
+    this.message = '';
   }
+
 
   ngOnInit() {  
-  
+    this.socket.connect();
+    this.nickname = this.router.snapshot.paramMap.get('nickname');
+
+    this.socket.printtoast();
+    this.socket.getMessages(this.messages);
+
+    this.socket.sendMessage(this.message);
+
+    this.socket.getUsers().subscribe(data =>
+      {
+        this.onlineusers.push(data["onlineusers"]);
+      })
+
+
+    console.log(this.onlineusers[0]);
+   
+
   }
 
 }

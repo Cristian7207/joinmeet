@@ -1,11 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-
-import { Injectable } from '@angular/core';
-import { Socket } from 'ngx-socket-io';
-import { map } from 'rxjs/operators';
-//import { AlertController } from '@ionic-angular';
-
+import {SocketioService} from '../services/socketio.service';
 
 @Component({
   selector: 'app-home',
@@ -13,36 +8,13 @@ import { map } from 'rxjs/operators';
   styleUrls: ['home.page.scss'],
 })
 
-@Injectable()
 export class HomePage {
   nickname='';
-  constructor(
-    private socket: Socket, 
-    private router: Router
-    ) {
-      console.log("Test");
-      this.sendMessage("hola");
- //     this.socket.connect();
- //     this.socket.emit('set-nickname', 'TEST');
+  constructor(private router: Router, private socket: SocketioService ) {  }    
 
-  }
-
-  async sendMessage(msg: string){
-    console.log(this.socket.connect());
-    this.socket.emit("set-name", "set-name");
-    
-}
-
-
-  /* joinChat()
+  async joinChat()
   {
-    this.socket.connect();
-    this.socket.emit('set-nickname', this.nickname);
+    this.socket.sendUser(this.nickname);
     this.router.navigate(['chatroom',{nickname:this.nickname}])
-  } */
-  ngOnInit() {
-  //  this.socket.connect();
-  //  this.socket.emit('set-name', 'test');
-  }
+  };
 }
-
